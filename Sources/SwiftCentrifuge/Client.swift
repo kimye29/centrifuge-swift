@@ -46,7 +46,7 @@ public class CentrifugeClient {
     fileprivate(set) var config: CentrifugeClientConfig
     
     //MARK -
-    fileprivate(set) var status: CentrifugeClientStatus = .new
+    private(set) var status: CentrifugeClientStatus = .new
     fileprivate var conn: WebSocket?
     fileprivate var token: String?
     fileprivate var client: String?
@@ -226,7 +226,17 @@ public class CentrifugeClient {
     public func newSubscription(channel: String, delegate: CentrifugeSubscriptionDelegate) throws -> CentrifugeSubscription {
         defer { subscriptionsLock.unlock() }
         subscriptionsLock.lock()
-        guard self.subscriptions.filter({ $0.channel == channel }).count == 0 else { throw CentrifugeError.duplicateSub }
+
+        if let existingSub = self.subscriptions.first(where: { $0.channel == channel }) {
+            if existingSub.status == .unsubscribed {
+                existingSub.delegate = delegate
+                existingSub.subscribe()
+                return existingSub
+            } else {
+                throw CentrifugeError.duplicateSub
+            }
+        }
+
         let sub = CentrifugeSubscription(centrifuge: self, channel: channel, delegate: delegate)
         self.subscriptions.append(sub)
         return sub
