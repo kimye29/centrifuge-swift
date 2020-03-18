@@ -46,7 +46,7 @@ public class CentrifugeClient {
     fileprivate(set) var config: CentrifugeClientConfig
     
     //MARK -
-    private(set) var status: CentrifugeClientStatus = .new
+    var status: CentrifugeClientStatus = .new
     fileprivate var conn: WebSocket?
     fileprivate var token: String?
     fileprivate var client: String?
