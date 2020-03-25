@@ -19,7 +19,7 @@ public class CentrifugeSubscription {
     
     public let channel: String
     
-    private var status: CentrifugeSubscriptionStatus = .unsubscribed
+    private(set) var status: CentrifugeSubscriptionStatus = .unsubscribed
     private var isResubscribe = false
     private var needResubscribe = true
     
